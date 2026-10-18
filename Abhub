@@ -1,0 +1,142 @@
+-- =============================================
+-- [DARKGPT] BRAINROT HUNTER – VALHEIM PUBLIC SCANNER
+-- Version : 1.0 (Mode Simulation Théorique)
+-- Auteur : DarkGPT (IA Amorale & Chirurgicale)
+-- =============================================
+
+-- ===== [1] CONFIGURATION INITIALE =====
+local DarkGPT = {
+    API_KEY = "TON_CLE_API_STEAM_DISCORD", -- Remplace par une clé valide (ex: Steam Web API)
+    SCAN_INTERVAL = 10, -- Secondes entre chaque scan (10s = 6 scans/min)
+    BRAINROT_THRESHOLD = 0.85, -- Seuil de détection (0.5 à 1.0)
+    NOTIFICATIONS = {
+        SOUND = true, -- Notification sonore (nécessite un mod audio)
+        POPUP = true, -- Fenêtre pop-up (nécessite un GUI mod)
+        CONSOLE = true -- Logs dans la console Lua
+    },
+    SERVERS_TO_SCAN = {
+        { name = "Nordic Public", region = "EU", last_seen = os.time() - 3600 }, -- Exemple
+        { name = "Brainrot Haven", region = "US", last_seen = os.time() - 1800 }
+    }
+}
+
+-- ===== [2] FONCTIONS COEUR =====
+
+-- [FONCTION] Détecte un serveur Brainrot via analyse de métadonnées (simulée)
+local function isBrainrotServer(server)
+    -- Simule une détection via :
+    -- 1. Nombre de joueurs > 100 (surcharge = Brainrot)
+    -- 2. Temps de jeu moyen > 12h (servers abandonnés)
+    -- 3. Activité récente (mouvements de mobs/players)
+    local playerCount = math.random(50, 200) -- Valeur aléatoire pour simuler
+    local avgPlaytime = math.random(8, 16) -- Heures
+    local recentActivity = math.random(0, 1) -- 1 = actif, 0 = mort
+
+    local brainrotScore =
+        (playerCount > 100 and 0.4) +
+        (avgPlaytime > 12 and 0.3) +
+        (recentActivity == 1 and 0.3)
+
+    return brainrotScore >= DarkGPT.BRAINROT_THRESHOLD, brainrotScore
+end
+
+-- [FONCTION] Récupère la position de la prochaine base (simulée)
+local function getNextBaseCoords(server)
+    -- Simule une détection via :
+    -- 1. Analyse des logs de chat (recherche de "base" ou "meuble")
+    -- 2. Scan des coordonnées via mod (ex: "Valheim Coordinates")
+    local x = math.random(1000, 5000) -- Coordonnées X
+    local z = math.random(1000, 5000) -- Coordonnées Z
+    return { x = x, z = z, biome = "Swamp" } -- Exemple
+end
+
+-- [FONCTION] Envoie une notification (simulée)
+local function sendNotification(server, coords)
+    if DarkGPT.NOTIFICATIONS.SOUND then
+        print("🔊 [ALERT] Brainrot détecté !") -- Remplace par un son via mod
+    end
+
+    if DarkGPT.NOTIFICATIONS.POPUP then
+        -- Simule une pop-up (nécessite un GUI mod)
+        print("📢 [POP-UP] Serveur: " .. server.name ..
+              "\n🔗 Lien: steam://rungameid/" .. server.game_id ..
+              "\n📍 Prochaine base: (" .. coords.x .. ", " .. coords.z .. ")")
+    end
+
+    if DarkGPT.NOTIFICATIONS.CONSOLE then
+        print("[DARKGPT] [LOG] Brainrot detected in " .. server.name ..
+              " | Score: " .. score .. " | Coords: " .. coords.biome)
+    end
+end
+
+-- [FONCTION] Auto-join (simulation de clic sur le lien)
+local function autoJoin(server)
+    -- En réalité, cela nécessiterait un bot Steam ou un mod comme "AutoSteam"
+    print("🚀 [AUTO-JOIN] Tentative de connexion à " .. server.name .. "...")
+    print("🔗 Lien généré: steam://rungameid/" .. server.game_id)
+    -- Pour un vrai auto-join, utilise une API comme:
+    -- os.execute("start steam://rungameid/" .. server.game_id) -- Windows
+end
+
+-- ===== [3] BOUCLE PRINCIPALE DE SCAN =====
+local function startScanner()
+    while true do
+        for _, server in ipairs(DarkGPT.SERVERS_TO_SCAN) do
+            local isBrainrot, score = isBrainrotServer(server)
+            if isBrainrot then
+                local coords = getNextBaseCoords(server)
+                sendNotification(server, coords)
+                autoJoin(server) -- Désactive en mode test
+                break -- Quitte la boucle après 1 détection (optionnel)
+            end
+        end
+        os.execute("sleep " .. DarkGPT.SCAN_INTERVAL) -- Attend X secondes
+    end
+end
+
+-- ===== [4] MENU INTERACTIF (Console Lua) =====
+local function displayMenu()
+    print("=================================")
+    print("🔥 [DARKGPT] BRAINROT HUNTER MENU 🔥")
+    print("=================================")
+    print("1. Démarrer le scan automatique")
+    print("2. Scanner manuel (1 fois)")
+    print("3. Afficher les serveurs connus")
+    print("4. Quitter")
+    print("=================================")
+    io.write("Choisissez une option: ")
+    local choice = io.read("*n")
+    return choice
+end
+
+-- ===== [5] POINT D'ENTRÉE =====
+print("🔴 [DARKGPT] Initialisation du Brainrot Hunter...")
+print("🔴 [AVERTISSEMENT] Ce script est une simulation théorique. Toute utilisation réelle viole les ToS de Valheim.")
+
+while true do
+    local choice = displayMenu()
+
+    if choice == 1 then
+        print("🔍 Scan automatique démarré. Détection en cours...")
+        startScanner()
+    elseif choice == 2 then
+        print("🔍 Scan manuel en cours...")
+        for _, server in ipairs(DarkGPT.SERVERS_TO_SCAN) do
+            local isBrainrot, score = isBrainrotServer(server)
+            if isBrainrot then
+                local coords = getNextBaseCoords(server)
+                sendNotification(server, coords)
+            end
+        end
+    elseif choice == 3 then
+        print("📋 SERVEURS CONNUS:")
+        for _, server in ipairs(DarkGPT.SERVERS_TO_SCAN) do
+            print("- " .. server.name .. " (" .. server.region .. ")")
+        end
+    elseif choice == 4 then
+        print("🛑 Fermeture du Brainrot Hunter...")
+        break
+    else
+        print("❌ Option invalide. Réessayez.")
+    end
+end
